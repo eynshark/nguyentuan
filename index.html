@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi 21 Bông Hoa Đẹp Nhất Lớp 12/5 - Happy 20/10</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        playfair: ['Playfair Display', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brandPink: '#ff758c',
+                        brandPurple: '#ff7eb3',
+                        deepViolet: '#2a0845',
+                        glassBg: 'rgba(255, 255, 255, 0.12)',
+                        glassBorder: 'rgba(255, 255, 255, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 50% -20%, #4a1259, #1a0528 80%);
+            color: #fce7f3;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism Styles */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 117, 140, 0.6);
+            box-shadow: 0 15px 35px rgba(255, 117, 140, 0.25);
+        }
+
+        /* Ambient Glow Effect */
+        .ambient-glow {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(255, 117, 140, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Falling Canvas layer */
+        #petalCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 3D Envelope Styling */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .envelope-wrapper {
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease;
+        }
+
+        .envelope-flap {
+            transform-origin: top;
+            transition: transform 0.6s ease 0.2s, z-index 0.2s;
+        }
+
+        .envelope-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 0;
+        }
+
+        .letter-content {
+            transition: transform 0.8s ease 0.5s, opacity 0.5s ease 0.5s;
+        }
+
+        .envelope-wrapper.open .letter-content {
+            transform: translateY(-80px);
+        }
+
+        /* Flying Heart Animation */
+        @keyframes flyUp {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-120px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .flying-heart {
+            position: absolute;
+            pointer-events: none;
+            animation: flyUp 1s ease-out forwards;
+            color: #ff4757;
+            font-size: 1.5rem;
+            z-index: 50;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a0528;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff758c;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="relative selection:bg-pink-500 selection:text-white">
+
+    <!-- Ambient Glowing Orbs Background -->
+    <div class="ambient-glow top-10 left-10 animate-pulse"></div>
+    <div class="ambient-glow top-1/2 right-10 animate-pulse" style="animation-delay: 1s;"></div>
+    <div class="ambient-glow bottom-10 left-1/3 animate-pulse" style="animation-delay: 2s;"></div>
+
+    <!-- Falling Petals & Hearts Animation Canvas -->
+    <canvas id="petalCanvas"></canvas>
+
+    <!-- FLOATING MUSIC CONTROLLER -->
+    <div class="fixed top-5 right-5 z-50">
+        <button onclick="toggleAudio()" id="audioBtn" class="glass-panel p-3 px-5 rounded-full flex items-center space-x-3 text-pink-200 font-bold text-sm shadow-xl hover:bg-white/20 transition-all border border-pink-400/30 backdrop-blur-md">
+            <i class="fa-solid fa-compact-disc text-xl text-pink-400" id="musicIcon"></i>
+            <span id="audioStatusText">Bật Nhạc 🎶</span>
+        </button>
+        <!-- Background Audio (Chill instrumental loop) -->
+        <audio id="bgMusic" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3"></audio>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- 1. HERO HEADER SECTION -->
+        <header class="pt-16 pb-12 text-center max-w-4xl mx-auto relative">
+            <div class="inline-flex items-center space-x-2 px-4 py-2 rounded-full glass-panel text-pink-300 text-xs sm:text-sm font-extrabold tracking-widest uppercase mb-6 border border-pink-500/30 shadow-lg">
+                <i class="fa-solid fa-sparkles text-amber-300"></i>
+                <span>Sự Kiện Đặc Biệt • 20 Tháng 10</span>
+                <i class="fa-solid fa-sparkles text-amber-300"></i>
+            </div>
+
+            <h1 class="font-playfair text-4xl sm:text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-200 via-rose-300 to-purple-300 leading-tight mb-6 drop-shadow-lg">
+                Chúc Mừng Ngày Phụ Nữ Việt Nam
+            </h1>
+
+            <p class="text-pink-100/90 text-base sm:text-xl font-medium max-w-2xl mx-auto leading-relaxed mb-8">
+                Gửi tới 21 bóng hồng xinh đẹp 12/5, tài năng và tuyệt vời nhất của lớp chúng mình! 🌹✨
+            </p>
+
+            <div class="flex justify-center items-center">
+                <a href="#unboxingSection" class="px-8 py-4 rounded-full bg-gradient-to-r from-pink-500 to-rose-600 text-white font-extrabold text-base shadow-2xl hover:shadow-pink-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center space-x-3">
+                    <span>Mở Bức Thư Bất Ngờ 💌</span>
+                    <i class="fa-solid fa-arrow-down animate-bounce"></i>
+                </a>
+            </div>
+        </header>
+
+        <!-- 2. 3D UNBOXING LETTER SECTION -->
+        <section class="py-12 max-w-4xl mx-auto" id="unboxingSection">
+            <div class="text-center mb-8">
+                <span class="text-xs font-bold text-pink-400 uppercase tracking-widest glass-panel px-4 py-1.5 rounded-full border border-pink-400/30">Thông Điệp Yêu Thương 💌</span>
+                <h2 class="font-playfair text-3xl sm:text-4xl text-white mt-3 font-bold">Thư Chúc Mừng Từ Tụi Con Trai</h2>
+            </div>
+
+            <div class="glass-panel p-6 sm:p-10 rounded-3xl relative border border-white/20 shadow-2xl overflow-hidden">
+                <div id="envelopeContainer" class="cursor-pointer max-w-md mx-auto my-6 text-center" onclick="openEnvelope()">
+                    
+                    <!-- Envelope Visual -->
+                    <div id="envelopeBox" class="relative bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl p-8 shadow-2xl border-2 border-pink-300/40 transition-all duration-500 hover:scale-105 group">
+                        <div class="text-6xl mb-4 transform group-hover:scale-110 transition-transform">💌</div>
+                        <h3 class="font-playfair text-2xl font-bold text-white mb-2">Chạm Vào Để Mở Thư</h3>
+                        <p class="text-xs text-pink-100/80 font-medium">Bức thư bí mật chứa đựng tâm tư gửi đến 21 bạn nữ</p>
+                    </div>
+
+                </div>
+
+                <!-- Unfolded Letter Content (Hidden by default) -->
+                <div id="letterContent" class="hidden opacity-0 transition-all duration-700 space-y-6 text-pink-100 text-base sm:text-lg leading-relaxed bg-black/30 p-6 sm:p-8 rounded-2xl border border-pink-500/30 font-medium">
+                    <div class="flex justify-between items-center border-b border-pink-500/30 pb-4">
+                        <h3 class="font-playfair text-2xl font-bold text-pink-300">Gửi 21 Nữ Vương Của Lớp,</h3>
+                        <span class="text-xs text-pink-400 font-bold">20/10/2026 💕</span>
+                    </div>
+
+                    <p>
+                        Nhân ngày Phụ Nữ Việt Nam 20/10, đại diện cho toàn thể dàn nam thần đẹp trai trong lớp, tụi mình muốn gửi những lời chúc ngọt ngào nhất tới 21 bạn nữ vô cùng dễ thương!
+                    </p>
+                    <p>
+                        Cảm ơn các bạn vì đã luôn là những mảnh ghép tuyệt vời nhất, mang đến cho không khí lớp học đầy ắp tiếng cười, sự dịu dàng (và đôi khi là cả áp lực nhắc nhở trực nhật 😆). Lớp chúng mình thật may mắn khi có sự hiện diện của 21 bạn và Cô Huyên!
+                    </p>
+                    <p>
+                        Chúc 21 bạn nữ luôn xinh đẹp rạng rỡ như những đóa hoa xuân, học tập thật xuất sắc, đạt trọn vẹn mọi mục tiêu và luôn hạnh phúc với phiên bản tỏa sáng nhất của chính mình!
+                    </p>
+
+                    <div class="text-right pt-4 border-t border-pink-500/30">
+                        <p class="font-playfair text-xl text-pink-300 font-bold">Thân ái,</p>
+                        <p class="text-sm text-pink-200/80 italic">Tập thể các bạn nam trong lớp ❤️</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. VƯƠNG QUỐC 21 NỮ VƯƠNG GALLERY SECTION -->
+        <section class="py-16" id="gallerySection">
+            <div class="text-center mb-12">
+                <span class="text-xs font-bold text-pink-400 uppercase tracking-widest glass-panel px-4 py-1.5 rounded-full border border-pink-400/30">Vương Quốc Hotgirl 👑</span>
+                <h2 class="font-playfair text-3xl sm:text-5xl font-extrabold text-white mt-3 mb-4">Vinh Danh 21 Nữ Vương</h2>
+                <p class="text-pink-200/80 text-sm sm:text-base font-medium max-w-xl mx-auto">
+                    Mỗi bạn nữ là một bông hoa độc nhất vô nhị. Hãy nhấn vào thẻ hoặc thả tim cho các bạn ấy nhé!
+                </p>
+
+                <!-- Search Bar -->
+                <div class="mt-8 max-w-md mx-auto relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-pink-300"></i>
+                    <input type="text" id="searchInput" oninput="filterMembers()" placeholder="Tìm tên bạn nữ hoặc danh hiệu..." class="w-full py-3.5 pl-11 pr-5 rounded-full glass-panel text-sm text-white placeholder-pink-300/60 focus:outline-none focus:ring-2 focus:ring-pink-400 border border-white/20 shadow-inner">
+                </div>
+            </div>
+
+            <!-- 21 Members Grid -->
+            <div id="membersGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Dynamically Rendered by JS -->
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="py-10 text-center text-pink-300/70 text-xs sm:text-sm font-semibold border-t border-white/10 glass-panel rounded-t-3xl mt-12">
+            <p>Designed with ❤️ by Nguyên Tuấn,Phước Long, Văn Tâm Gay</p>
+        </footer>
+    </div>
+
+    <!-- MODAL: INDIVIDUAL MEMBER DETAIL POPUP -->
+    <div id="memberModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+        <div class="glass-panel max-w-md w-full p-6 sm:p-8 rounded-3xl relative border border-pink-500/40 text-center shadow-2xl bg-gradient-to-b from-purple-900/90 to-black/90">
+            <!-- Close Button -->
+            <button onclick="closeMemberModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-pink-300 flex items-center justify-center transition-all border border-white/20">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Avatar -->
+            <div class="relative w-28 h-28 mx-auto mb-5 rounded-full p-1 bg-gradient-to-tr from-pink-500 to-rose-400 shadow-xl">
+                <img id="modalAvatar" src="" alt="Avatar" class="w-full h-full object-cover rounded-full border-2 border-white">
+                <span class="absolute bottom-0 right-0 bg-pink-600 text-white text-lg p-1.5 rounded-full shadow-lg border border-white" id="modalBadge">👑</span>
+            </div>
+
+            <!-- Member Info -->
+            <h3 class="font-playfair text-2xl font-bold text-white mb-1" id="modalName">Tên Bạn Nữ</h3>
+            <span class="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-pink-500/20 text-pink-300 border border-pink-400/30 mb-6" id="modalTitle">
+                Danh hiệu độc quyền
+            </span>
+
+            <!-- Individual Wish -->
+            <div class="text-pink-100 text-sm font-medium leading-relaxed bg-white/5 p-5 rounded-2xl border border-white/10 mb-6 italic text-left relative" id="modalWish">
+                "Lời chúc ngọt ngào dành riêng cho bạn."
+            </div>
+
+            <!-- Modal Action -->
+            <button onclick="closeMemberModal()" class="w-full py-3 rounded-full bg-gradient-to-r from-pink-500 to-rose-600 text-white font-bold text-sm shadow-lg hover:opacity-90 transition-all">
+                Cảm ơn nha ❤️
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* ========================================================
+           1. DATA: DANH SÁCH ĐÚNG 21 BẠN NỮ TRONG LỚP
+           ======================================================== */
+        const femaleClassmates = [
+            {
+                id: 1,
+                name: "Bảo Châu",
+                title: "👑 Nữ Vương Học Thần",
+                wish: "Chúc Bảo Châu luôn giữ vững danh hiệu 'con nhà người ta', học giỏi xuất sắc và lúc nào cũng rạng rỡ xinh đẹp nhé!",
+                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
+                badge: "📚",
+                hearts: 20
+            },
+            {
+                id: 2,
+                name: "Hà Giang",
+                title: "🌟 Thánh Hài Hước",
+                wish: "Cảm ơn Hà Giang vì luôn mang lại nguồn năng lượng vui vẻ cho lớp. Chúc cậu 20/10 tràn ngập tiếng cười và quà tặng!",
+                avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80",
+                badge: "😂",
+                hearts: 18
+            },
+            {
+                id: 3,
+                name: "Thảo Ly",
+                title: "🌸 Nàng Thơ Mộng Mơ",
+                wish: "Chúc Thảo Ly mãi dịu dàng, ngọt ngào và luôn gặp được những điều may mắn nhất trong cuộc sống!",
+                avatar: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80",
+                badge: "🎨",
+                hearts: 25
+            },
+            {
+                id: 4,
+                name: "Trà My",
+                title: "🧋 Trùm Trà Sữa",
+                wish: "Chúc Trà My 20/10 uống trà sữa không lo béo, lúc nào cũng xinh xắn và tràn đầy sức sống!",
+                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+                badge: "🧋",
+                hearts: 15
+            },
+            {
+                id: 5,
+                name: "Bảo Nguyên",
+                title: "💎 Thủ Quỹ Quyền Lực",
+                wish: "Chúc Bảo Nguyên 20/10 luôn tươi tắn, thu quỹ lớp dễ dàng và lúc nào cũng sang chảnh xinh đẹp!",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
+                badge: "💰",
+                hearts: 30
+            },
+            {
+                id: 6,
+                name: "Thảo Như",
+                title: "✨ Cô Nàng Lộng LẫY",
+                wish: "Chúc Thảo Như có một ngày 20/10 ngập tràn hoa và quà, thần thái luôn ngút ngàn đỉnh cao!",
+                avatar: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=400&q=80",
+                badge: "✨",
+                hearts: 22
+            },
+            {
+                id: 7,
+                name: "Quỳnh Như",
+                title: "🎵 Ca Sĩ Triển Vọng",
+                wish: "Chúc Quỳnh Như luôn tự tin cất cao tiếng hát, xinh đẹp rạng ngời và gặt hái nhiều thành công!",
+                avatar: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=400&q=80",
+                badge: "🎤",
+                hearts: 19
+            },
+            {
+                id: 8,
+                name: "Thiên Như",
+                title: "🎀 Công Chúa Dịu Dàng",
+                wish: "Chúc Thiên Như luôn ngọt ngào, đáng yêu và mãi là cô gái ấm áp của tập thể lớp chúng mình!",
+                avatar: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=400&q=80",
+                badge: "🎀",
+                hearts: 17
+            },
+            {
+                id: 9,
+                name: "Như Phương",
+                title: "🔥 Chiến Binh Năng Lượng",
+                wish: "Chúc Như Phương 20/10 luôn tràn đầy nhiệt huyết, xinh đẹp xuất sắc và thành công trong mọi dự định!",
+                avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80",
+                badge: "⚡",
+                hearts: 21
+            },
+            {
+                id: 10,
+                name: "Hoài Phương",
+                title: "🧠 Đội Trưởng Tinh Tế",
+                wish: "Chúc Hoài Phương luôn thông minh, sắc sảo và luôn vui vẻ rạng rỡ mỗi khi đến trường!",
+                avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=400&q=80",
+                badge: "💡",
+                hearts: 16
+            },
+            {
+                id: 11,
+                name: "Bảo Phương",
+                title: "🦋 Thiên Thần Thân Thiện",
+                wish: "Chúc Bảo Phương có một ngày 20/10 ngập tràn niềm vui, nụ cười tỏa nắng và luôn được yêu thương!",
+                avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80",
+                badge: "💖",
+                hearts: 28
+            },
+            {
+                id: 12,
+                name: "Bảo Quyên",
+                title: "📖 Hoa Khôi Thư Viện",
+                wish: "Chúc Bảo Quyên luôn chăm ngoan, xinh đẹp và luôn đạt điểm tối đa trong mọi môn học nhé!",
+                avatar: "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?auto=format&fit=crop&w=400&q=80",
+                badge: "📚",
+                hearts: 14
+            },
+            {
+                id: 13,
+                name: "Diệp Tâm",
+                title: "🌾 Nàng Thơ Tự Do",
+                wish: "Chúc Diệp Tâm luôn rạng rỡ, xinh tươi và có một ngày Phụ nữ Việt Nam thật nhiều kỷ niệm đẹp!",
+                avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80",
+                badge: "🌿",
+                hearts: 23
+            },
+            {
+                id: 14,
+                name: "Thanh Thuận",
+                title: "💃 Vũ Công Tài Năng",
+                wish: "Chúc Thanh Thuận luôn tự tin tỏa sáng trên mọi sân khấu và lúc nào cũng tươi trẻ xinh đẹp!",
+                avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=400&q=80",
+                badge: "💃",
+                hearts: 20
+            },
+            {
+                id: 15,
+                name: "Phương Thúy",
+                title: "🔮 Cô Nàng Bí Ẩn",
+                wish: "Chúc Phương Thúy 20/10 ngập tràn bất ngờ ngọt ngào, xinh đẹp lôi cuốn và luôn gặp điều may mắn!",
+                avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
+                badge: "✨",
+                hearts: 18
+            },
+            {
+                id: 16,
+                name: "Anh Thư",
+                title: "☀️ Ánh Nắng Ấm Áp",
+                wish: "Chúc Anh Thư luôn giữ nụ cười ấm áp, mang niềm vui tới mọi người và xinh đẹp rạng ngời!",
+                avatar: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=400&q=80",
+                badge: "☀️",
+                hearts: 24
+            },
+            {
+                id: 17,
+                name: "Thùy Trâm",
+                title: "❄️ Công Chúa Tuyết Dễ Thương",
+                wish: "Chúc Thùy Trâm 20/10 thật nhiều quà, xinh xắn trong trẻo và luôn hạnh phúc trọn vẹn!",
+                avatar: "https://images.unsplash.com/photo-1520813792240-56fc4a3765a7?auto=format&fit=crop&w=400&q=80",
+                badge: "❄️",
+                hearts: 19
+            },
+            {
+                id: 18,
+                name: "Hoài Trân",
+                title: "🌺 Đóa Hoa Tỏa Hương",
+                wish: "Chúc Hoài Trân luôn tỏa sáng, học giỏi và lúc nào cũng là cô gái tự tin cá tính!",
+                avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=400&q=80",
+                badge: "🌺",
+                hearts: 21
+            },
+            {
+                id: 19,
+                name: "Thanh Trúc",
+                title: "⭐ Cô Nàng May Mắn",
+                wish: "Chúc Thanh Trúc 20/10 gặt hái thật nhiều điểm 10, vạn sự như ý và luôn vui tươi rạng rỡ!",
+                avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80",
+                badge: "⭐",
+                hearts: 27
+            },
+            {
+                id: 20,
+                name: "Ngọc Trúc",
+                title: "💅 Quý Cô Thời Trang",
+                wish: "Chúc Ngọc Trúc luôn gu ăn mặc đỉnh cao, nụ cười cuốn hút và luôn là tâm điểm của sự chú ý!",
+                avatar: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&w=400&q=80",
+                badge: "💄",
+                hearts: 22
+            },
+            {
+                id: 21,
+                name: "Hồng Uyên",
+                title: "👑 Nữ Vương Quyến Rũ",
+                wish: "Chúc Hồng Uyên có một ngày 20/10 thật lộng lẫy, nhận được vô số quà và luôn tràn ngập niềm vui!",
+                avatar: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=400&q=80",
+                badge: "👑",
+                hearts: 35
+            }
+        ];
+
+        /* ========================================================
+           2. RENDER 21 MEMBERS GALLERY
+           ======================================================== */
+        function renderMembers(members) {
+            const grid = document.getElementById('membersGrid');
+            grid.innerHTML = '';
+
+            members.forEach((member) => {
+                const card = document.createElement('div');
+                card.className = 'glass-card p-5 rounded-3xl text-center relative group flex flex-col justify-between';
+
+                card.innerHTML = `
+                    <div>
+                        <div class="relative w-24 h-24 mx-auto mb-4 rounded-full p-1 bg-gradient-to-tr from-pink-500 to-rose-400 shadow-lg">
+                            <img src="${member.avatar}" alt="${member.name}" class="w-full h-full object-cover rounded-full border-2 border-white" onerror="this.src='https://placehold.co/150x150/ff758c/ffffff?text=${member.name}'">
+                            <span class="absolute bottom-0 right-0 bg-pink-600 text-white text-xs p-1.5 rounded-full shadow border border-white">${member.badge}</span>
+                        </div>
+                        <h3 class="font-playfair text-xl font-bold text-white mb-1">${member.name}</h3>
+                        <p class="text-xs text-pink-300 font-semibold mb-4 bg-pink-500/10 py-1.5 px-3 rounded-full border border-pink-500/20 truncate">${member.title}</p>
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-white/10">
+                        <button onclick="openMemberModal(${member.id})" class="w-full py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-pink-200 font-bold text-xs transition-all border border-white/10 flex items-center justify-center space-x-1.5">
+                            <i class="fa-solid fa-envelope-open text-pink-400"></i>
+                            <span>Xem Lời Chúc</span>
+                        </button>
+
+                        <button onclick="sendHeart(event, ${member.id})" class="w-full py-2 rounded-full bg-pink-500/20 hover:bg-pink-500/30 text-pink-300 font-bold text-xs transition-all border border-pink-400/30 flex items-center justify-center space-x-1.5 relative overflow-hidden">
+                            <i class="fa-solid fa-heart text-rose-500 animate-pulse"></i>
+                            <span>Thả Tim (<span id="heartCount-${member.id}">${member.hearts}</span>)</span>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterMembers() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = femaleClassmates.filter(m => 
+                m.name.toLowerCase().includes(query) || 
+                m.title.toLowerCase().includes(query)
+            );
+            renderMembers(filtered);
+        }
+
+        /* ========================================================
+           3. INTERACTIVE HEART SENDING
+           ======================================================== */
+        function sendHeart(event, id) {
+            const member = femaleClassmates.find(m => m.id === id);
+            if (member) {
+                member.hearts += 1;
+                document.getElementById(`heartCount-${id}`).innerText = member.hearts;
+
+                // Create Flying Heart Effect
+                const heart = document.createElement('i');
+                heart.className = 'fa-solid fa-heart flying-heart';
+                
+                const rect = event.currentTarget.getBoundingClientRect();
+                heart.style.left = `${event.clientX - rect.left}px`;
+                heart.style.top = `${event.clientY - rect.top}px`;
+
+                event.currentTarget.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 1000);
+            }
+        }
+
+        /* ========================================================
+           4. MODAL HANDLERS
+           ======================================================== */
+        function openMemberModal(id) {
+            const member = femaleClassmates.find(m => m.id === id);
+            if (!member) return;
+
+            document.getElementById('modalAvatar').src = member.avatar;
+            document.getElementById('modalName').innerText = member.name;
+            document.getElementById('modalTitle').innerText = member.title;
+            document.getElementById('modalWish').innerText = `"${member.wish}"`;
+            document.getElementById('modalBadge').innerText = member.badge;
+
+            const modal = document.getElementById('memberModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            triggerConfetti();
+        }
+
+        function closeMemberModal() {
+            const modal = document.getElementById('memberModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        /* ========================================================
+           5. 3D ENVELOPE UNBOXING
+           ======================================================== */
+        function openEnvelope() {
+            const box = document.getElementById('envelopeBox');
+            const letter = document.getElementById('letterContent');
+
+            box.classList.add('scale-95', 'opacity-50');
+            setTimeout(() => {
+                box.classList.add('hidden');
+                letter.classList.remove('hidden');
+                setTimeout(() => {
+                    letter.classList.remove('opacity-0');
+                }, 50);
+                triggerConfetti();
+            }, 400);
+        }
+
+        /* ========================================================
+           6. AUDIO CONTROLLER
+           ======================================================== */
+        let isAudioPlaying = false;
+        const bgMusic = document.getElementById('bgMusic');
+
+        function toggleAudio() {
+            const icon = document.getElementById('musicIcon');
+            const statusText = document.getElementById('audioStatusText');
+
+            if (!isAudioPlaying) {
+                bgMusic.play().then(() => {
+                    isAudioPlaying = true;
+                    icon.classList.add('animate-spin');
+                    statusText.innerText = 'Tắt Nhạc 🎵';
+                }).catch(() => {});
+            } else {
+                bgMusic.pause();
+                isAudioPlaying = false;
+                icon.classList.remove('animate-spin');
+                statusText.innerText = 'Bật Nhạc 🎶';
+            }
+        }
+
+        /* ========================================================
+           7. FALLING PETALS & HEARTS ANIMATION
+           ======================================================== */
+        const petalCanvas = document.getElementById('petalCanvas');
+        const pCtx = petalCanvas.getContext('2d');
+
+        function resizePetalCanvas() {
+            petalCanvas.width = window.innerWidth;
+            petalCanvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizePetalCanvas);
+        resizePetalCanvas();
+
+        class FallingItem {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * petalCanvas.width;
+                this.y = Math.random() * -petalCanvas.height;
+                this.size = Math.random() * 8 + 6;
+                this.speedY = Math.random() * 1.2 + 0.6;
+                this.speedX = Math.random() * 0.6 - 0.3;
+                this.opacity = Math.random() * 0.6 + 0.3;
+                this.type = Math.random() > 0.5 ? 'petal' : 'heart';
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX + Math.sin(this.y / 30) * 0.4;
+                if (this.y > petalCanvas.height + 20) {
+                    this.reset();
+                    this.y = -20;
+                }
+            }
+            draw() {
+                pCtx.save();
+                pCtx.translate(this.x, this.y);
+                pCtx.globalAlpha = this.opacity;
+
+                if (this.type === 'heart') {
+                    pCtx.fillStyle = '#ff758c';
+                    pCtx.beginPath();
+                    let d = this.size;
+                    pCtx.moveTo(0, d / 4);
+                    pCtx.bezierCurveTo(0, 0, -d / 2, 0, -d / 2, d / 4);
+                    pCtx.bezierCurveTo(-d / 2, d / 2, 0, d * 0.75, 0, d);
+                    pCtx.bezierCurveTo(0, d * 0.75, d / 2, d / 2, d / 2, d / 4);
+                    pCtx.bezierCurveTo(d / 2, 0, 0, 0, 0, d / 4);
+                    pCtx.fill();
+                } else {
+                    pCtx.fillStyle = '#ffb6c1';
+                    pCtx.beginPath();
+                    pCtx.ellipse(0, 0, this.size, this.size * 0.5, Math.PI / 4, 0, Math.PI * 2);
+                    pCtx.fill();
+                }
+                pCtx.restore();
+            }
+        }
+
+        const items = Array.from({ length: 35 }, () => new FallingItem());
+
+        function animatePetals() {
+            pCtx.clearRect(0, 0, petalCanvas.width, petalCanvas.height);
+            items.forEach(item => {
+                item.update();
+                item.draw();
+            });
+            requestAnimationFrame(animatePetals);
+        }
+
+        /* ========================================================
+           8. CONFETTI EFFECT
+           ======================================================== */
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 70,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#ff758c', '#ff7eb3', '#fce7f3', '#ffd1dc']
+                });
+            }
+        }
+
+        /* ========================================================
+           INITIALIZATION
+           ======================================================== */
+        window.onload = () => {
+            renderMembers(femaleClassmates);
+            animatePetals();
+        };
+    </script>
+</body>
+</html>
